@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.colorScheme) var colorScheme
     var body: some View {
         ZStack {
             Color("Background").ignoresSafeArea()
@@ -18,7 +19,9 @@ struct HomeView: View {
     }
     
     var content: some View {
+        
         VStack(alignment: .leading, spacing: 0) {
+            
             Text("Jobs")
                 .customFont(.largeTitle)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -44,6 +47,9 @@ struct HomeView: View {
                 }
             }
             .padding(20)
+            
+            Text(colorScheme == .dark ? "In dark mode" : "In light mode")
+                .padding()
         }
     }
 }

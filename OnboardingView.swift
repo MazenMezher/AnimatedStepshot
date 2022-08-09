@@ -22,7 +22,8 @@ struct OnboardingView: View {
                     .frame(width: 260, alignment: .leading)
                 
                 Text("StepStone is one of the world's leading next generation recruitment platforms. Through our AI-powered hiring platform and smart autonomous matching technologies we aim to disrupt the way talent and all-sized businesses connect.")
-                    .customFont(.body)
+                    .font(.system(size: 20))
+                    .fontWeight(.medium)
                     
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
@@ -53,7 +54,8 @@ struct OnboardingView: View {
                 }
                 
                 Text("StepShot has been helping companies make great hires and candidates find the right job for over 25 years.")
-                    .customFont(.footnote)
+                    .font(.system(size: 20))
+                    .fontWeight(.medium)
                     
             }
             .padding(40)
