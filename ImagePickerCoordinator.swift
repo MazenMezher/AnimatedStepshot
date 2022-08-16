@@ -1,15 +1,10 @@
 import Foundation
 import SwiftUI
 
-
-//Below is code to get image and give it a logo value
-
 class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     @Binding var image: UIImage?
     @Binding var isShown: Bool
-    @State private var Result: ResultItem?
-
     
     init(image: Binding<UIImage?>, isShown: Binding<Bool>) {
         _image = image
@@ -18,16 +13,16 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
-      
-        
         if let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             image = uiImage
             isShown = false
             
             let data = uiImage.jpegData(compressionQuality: 0.7)
             let strBase64 = data!.base64EncodedString()
-
-            let url = URL(string: "http://localhost:8080/detect")!
+            
+            guard let url = URL(string: "http://localhost:8080/detect") else {
+                return
+            }
             
             var request = URLRequest(url: url)
             
@@ -37,47 +32,44 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
             let body: [String: AnyHashable] = [
                 "content": strBase64
             ]
-            let jsonData = try? JSONSerialization.data(withJSONObject: body)
-            request.httpBody = jsonData
-
+            request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: .fragmentsAllowed)
             // Make the request
-            let task = URLSession.shared.dataTask(with: request) { [self] data, response, error in
-                guard let data = data, error == nil else {
-                    print(error?.localizedDescription ?? "No data")
-                    return
-                }
-                let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
-                if let responseJSON = responseJSON as? [String: Any] {
-                                        }
-                
-                if let decodedData = try? JSONDecoder().decode(ResultItem.self, from: data) {
-                    print("This is decodedData: \(decodedData.description)")
-                    DispatchQueue.main.async {
-                        self.Result = decodedData
-                        
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                print(response)
+                print("Test for gitupload/commit")
+                var result: Result?
+                do{
+                    let jsonData = try Data(contentsOf: url)
+                    result = try JSONDecoder().decode(Result.self, from: jsonData)
+                    
+                    if let result = result {
+                        print(result)
+                    } else {
+                        print("Failed")
                     }
+                }catch {
+                    print("Error: \(error)")
                 }
+                
             }
             task.resume()
         }
-      
+        
+        
     }
     
-  
+    struct Result: Codable {
+        let content: [ResultItem]
+    }
+    
+    struct ResultItem: Codable {
+        let content: String
+    }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         isShown = false
     }
     
-}
-
-struct CustomButton1: View {
-    
-    @Binding var placeHolderText: String
-    
-    var body: some View {
-        Button("Sending data says"){ self.placeHolderText = "Works"}
-    }
 }
 
 
@@ -106,8 +98,4 @@ struct ImagePicker: UIViewControllerRepresentable {
         
     }
     
-}
-
-struct ResultItem: Decodable {
-    let description: String
 }
