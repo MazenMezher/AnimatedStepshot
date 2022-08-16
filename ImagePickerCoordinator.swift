@@ -9,7 +9,7 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
     @Binding var image: UIImage?
     @Binding var isShown: Bool
     @State private var Result: ResultItem?
-    
+
     
     init(image: Binding<UIImage?>, isShown: Binding<Bool>) {
         _image = image
@@ -18,7 +18,7 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
-        
+      
         
         if let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             image = uiImage
@@ -26,7 +26,7 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
             
             let data = uiImage.jpegData(compressionQuality: 0.7)
             let strBase64 = data!.base64EncodedString()
-            
+
             let url = URL(string: "http://localhost:8080/detect")!
             
             var request = URLRequest(url: url)
@@ -39,7 +39,7 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
             ]
             let jsonData = try? JSONSerialization.data(withJSONObject: body)
             request.httpBody = jsonData
-            
+
             // Make the request
             let task = URLSession.shared.dataTask(with: request) { [self] data, response, error in
                 guard let data = data, error == nil else {
@@ -48,13 +48,10 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
                 }
                 let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
                 if let responseJSON = responseJSON as? [String: Any] {
-                    
-                }
+                                        }
                 
                 if let decodedData = try? JSONDecoder().decode(ResultItem.self, from: data) {
-                    
                     print("This is decodedData: \(decodedData.description)")
-                    
                     DispatchQueue.main.async {
                         self.Result = decodedData
                         
@@ -63,10 +60,10 @@ class ImagePickerCoordinator: NSObject, UINavigationControllerDelegate, UIImageP
             }
             task.resume()
         }
-        
+      
     }
     
-    
+  
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         isShown = false

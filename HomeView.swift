@@ -22,7 +22,7 @@ struct HomeView: View {
         
         VStack(alignment: .leading, spacing: 0) {
             
-            Text("Home")
+            Text("Jobs")
                 .customFont(.largeTitle)
                 .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20)
